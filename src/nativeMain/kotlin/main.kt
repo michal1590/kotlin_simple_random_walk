@@ -1,81 +1,98 @@
 fun main() {
     val size = getBoardSize()
-    var (board, headX, headY) = initBoard(size)
+    val game = Fractal(size)
 
-    println("Init Board")
-    showBoard(board)
-    println("head $headX $headY")
-
-
-    val stepsLimit = 5
-    var stepCount = 0
-
-    while (stepCount < stepsLimit){
-
-        stepCount++
-
-        val allowedMoves = findRightMoves(board, headX, headY, size)
-
-        if (allowedMoves.size == 0){
-            println("Game Over")
-            break
-        }
-
-        val selectedMove = selectMove(allowedMoves)
-        println("Move $selectedMove")
-        val out = makeMove(selectedMove, headX, headY)
-        headX = out.first
-        headY = out.second
-
-        updateBoard(board, headX, headY)
-        println("\n\n$stepCount Board")
-        println("head $headX $headY")
-        showBoard(board)
-    }
+    game.showBoard("Init")
+    game.play(5)
 
     finish()
 }
 
-fun updateBoard(board: List<IntArray>, headX: Int, headY: Int) {
-    board[headY][headX] = 1
-}
 
+class Fractal(private val size: Int){
+    private val board: List<IntArray> = List(size) {IntArray(size) {0} }
+    private var headX = (0 until size).random()
+    private var headY = (0 until size).random()
 
-fun makeMove(selectedMove: String, headX: Int, headY: Int): Pair<Int, Int> {
-    return when (selectedMove) {
-        "left" -> Pair(headX - 1, headY)
-        "right" -> Pair(headX + 1, headY)
-        "top" -> Pair(headX, headY - 1)
-        else -> Pair(headX, headY + 1)
+    init {
+        board[headY][headX] = 1
+    }
+
+    fun showBoard(text: String) {
+        println("\n\n$text Board")
+        for (row in board){
+            for (element in row){
+                print("  ")
+                print(element)
+            }
+            println()
+        }
+    }
+
+    fun play(roundsLimit: Int){
+        var roundCount = 0
+
+        while (roundCount < roundsLimit){
+
+            roundCount++
+
+            val allowedMoves = findRightMoves()
+
+            if (allowedMoves.size == 0){
+                println("Game Over")
+                break
+            }
+
+            val selectedMove = selectMove(allowedMoves)
+            println("Move $selectedMove")
+
+            makeMove(selectedMove)
+
+            updateBoard()
+
+            showBoard(roundCount.toString())
+        }
+    }
+
+    private fun findRightMoves(): MutableList<String> {
+        val allowedMoves = mutableListOf("left", "right", "top", "bottom")
+        if ((headX - 1 <= 0) || (board[headY][headX - 1] == 1)) {
+            allowedMoves.remove("left")
+        }
+
+        if (headX + 1 < size) {
+            if (board[headY][headX + 1] != 0) allowedMoves.remove("right")
+        } else allowedMoves.remove("right")
+
+        if ((headY - 1 <= 0) || (board[headY - 1][headX] == 1)) {
+            allowedMoves.remove("top")
+        }
+
+        if (headY + 1 < size) {
+            if (board[headY + 1][headX] != 0) allowedMoves.remove("bottom")
+        } else allowedMoves.remove("bottom")
+
+        return allowedMoves
+    }
+
+        private fun selectMove(moves: MutableList<String>): String{
+        return moves.random()
+    }
+
+    private fun makeMove(selectedMove: String) {
+        when (selectedMove) {
+            "left" -> headX--
+            "right" -> headX++
+            "top" -> headY--
+            "bottom" -> headY++
+        }
+    }
+
+    private fun updateBoard() {
+        board[headY][headX] = 1
     }
 }
 
-fun selectMove(moves: MutableList<String>): String{
-    return moves.random()
-}
-
-
-fun findRightMoves(board: List<IntArray>, headX: Int, headY: Int, size: Int): MutableList<String>{
-    val allowedMoves = mutableListOf("left", "right", "top", "bottom")
-    if ((headX - 1 <= 0) || (board[headY][headX-1] == 1)){
-        allowedMoves.remove("left")
-    }
-
-    if (headX + 1 < size){
-        if (board[headY][headX+1] != 0) allowedMoves.remove("right")
-    } else allowedMoves.remove("right")
-
-    if ((headY - 1 <= 0) || (board[headY-1][headX] == 1)){
-
-        allowedMoves.remove("top")
-    }
-
-    if (headY + 1 < size){
-        if (board[headY+1][headX] != 0) allowedMoves.remove("bottom")
-    } else allowedMoves.remove("bottom")
-
-    return allowedMoves
-}
 
 fun getBoardSize(): Int {
     println("Enter board size")
@@ -85,28 +102,16 @@ fun getBoardSize(): Int {
 }
 
 
-fun initBoard(size: Int): Triple<List<IntArray>, Int, Int>{
-    val board = List(size) {IntArray(size) {0} }
-
-    val xStart = (0 until size).random()
-    val yStart = (0 until size).random()
-    board[yStart][xStart] = 1
-    return Triple(board, xStart, yStart)
-}
-
-
-fun showBoard(board: List<IntArray>) {
-//    println("\n\nBoard")
-    for (row in board){
-        for (element in row){
-            print("  ")
-            print(element)
-        }
-        println()
-    }
-}
-
 fun finish(){
     println("\n\n Press Enter to finish")
-    readLine()
+    var counter = 0
+    while (counter < 5) {
+        counter++
+        println("while numer $counter")
+        val input = readLine()
+        if (input.isNullOrBlank()) {
+            continue
+        }
+
+    }
 }
