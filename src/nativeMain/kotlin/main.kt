@@ -3,7 +3,7 @@ fun main() {
     val game = Fractal(size)
 
     game.showBoard("Init")
-    game.play(5)
+    game.play(10)
 
     finish()
 }
@@ -104,14 +104,6 @@ fun getBoardSize(): Int {
 
 fun finish(){
     println("\n\n Press Enter to finish")
-    var counter = 0
-    while (counter < 5) {
-        counter++
-        println("while numer $counter")
-        val input = readLine()
-        if (input.isNullOrBlank()) {
-            continue
-        }
+    readLine()
 
-    }
 }
